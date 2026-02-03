@@ -1,48 +1,72 @@
+```markdown
 ## 📧 SRV4 - Servidor de Correio e Segurança (Mail & Antivírus)
 
-O **SRV4** (`srv-db` / `srv-mail`) atua como o hub de comunicação da rede interna, integrando serviços de transporte de mensagens e proteção contra ameaças.
+O **SRV4** (`srv-db` / `srv-mail`) atua como o hub de comunicação da rede interna, integrando serviços de transporte de mensagens e proteção contra ameaças através de um motor de antivírus corporativo.
 
 ### 🛠️ Especificações Técnicas
-
-* **Hostname:** `srv-db` (conforme terminal).
-* **IP:** `10.0.0.50` (Recomendado para evitar conflito com SRV1).
+* **Hostname:** `srv-db`.
+* **IP:** `10.0.0.50` (Configurado para evitar conflito com o SRV1).
 * **Serviços:** Postfix (SMTP), Dovecot (IMAP/POP3) e ClamAV (Antivírus).
-
-### ⚙️ Implementação dos Serviços
-
-#### 1. Servidor de E-mail (Postfix & Dovecot)
-
-Responsável por enviar, receber e armazenar as mensagens dos usuários do domínio `@empresa.local`.
-
-* **Postfix:** Configurado para aceitar conexões apenas da rede interna (`10.0.0.0/24`).
-* **Dovecot:** Gerencia as caixas de correio (`Maildir`) e permite que o **Cliente-01** acesse os e-mails via Thunderbird ou Outlook.
-
-#### 2. Antivírus Corporativo (ClamAV)
-
-Implementado para realizar o escaneamento de arquivos em tempo real e anexos de e-mail.
-
-* **ClamDaemon:** Roda em background verificando diretórios compartilhados.
-* **Freshclam:** Serviço de atualização automática da base de assinaturas de vírus.
 
 ---
 
-### 🛡️ Integração com o Servidor de Arquivos (SRV3)
+### ⚙️ Implementação e Guia de Uso
 
-Uma funcionalidade avançada desta infraestrutura é o escaneamento dos compartilhamentos do Samba. O **SRV4** pode ser configurado para escanear a pasta `/srv/publico` do **SRV3** remotamente ou via montagem NFS.
+O servidor utiliza **Postfix** para envio e **Dovecot** para recebimento. As caixas de correio são estruturadas no formato `Maildir` dentro da `home` de cada usuário LDAP.
 
-### 💻 Comandos de Administração (SRV4)
-
+#### 1. Enviando um E-mail de Teste (Via Terminal)
+Para validar a comunicação entre usuários (ex: de `pedro` para `maria`):
 ```bash
-# Verificar status do servidor de e-mail
-systemctl status postfix
+# Acessar como o usuário pedro
+su - pedro
 
-# Ver logs de mensagens em tempo real (Auditoria de envio)
-tail -f /var/log/mail.log
-
-# Forçar atualização da base do antivírus
-freshclam
-
-# Escanear manualmente a pasta de um usuário
-clamscan -r /home/pedro/mail
+# Enviar e-mail para maria
+mail -s "Relatorio de Vendas" maria@empresa.local
+# (Escreva a mensagem e pressione CTRL+D para enviar)
 
 ```
+
+#### 2. Verificando o Recebimento
+
+As mensagens ficam armazenadas no diretório pessoal do destinatário:
+
+```bash
+# Acessar como maria e ler as novas mensagens
+su - maria
+ls /home/maria/Maildir/new/
+# Ou ler via interface interativa:
+mail
+
+```
+
+#### 3. Antivírus Corporativo (ClamAV)
+
+O **ClamAV** realiza o escaneamento de arquivos em tempo real e pode auditar os compartilhamentos do **SRV3 (Samba)** via rede.
+
+* **ClamDaemon:** Monitoramento em background.
+* **Freshclam:** Atualização automática das assinaturas de vírus.
+
+---
+
+### 🛡️ Monitoramento e Auditoria
+
+Como administrador, é possível acompanhar a entrega das mensagens e o status dos serviços em tempo real.
+
+**Logs de Correio:**
+
+```bash
+# Acompanhar entrega de e-mails (status=sent)
+tail -f /var/log/mail.log
+
+```
+
+**Comandos de Manutenção:**
+| Ação | Comando |
+| :--- | :--- |
+| **Reiniciar SMTP** | `systemctl restart postfix` |
+| **Reiniciar IMAP** | `systemctl restart dovecot` |
+| **Ver Fila de Envios** | `mailq` |
+| **Atualizar Antivírus** | `freshclam` |
+| **Escanear Pasta** | `clamscan -r /home/pedro/mail` |
+
+---

@@ -1,5 +1,3 @@
-Perfeito! Para deixar seu repositório no nível de um administrador de sistemas sênior, vou incluir a seção de **Comandos Úteis** (que ajuda muito quem for testar seu projeto) e o código completo do `README.md` formatado para o VS Code.
-
 ### 📝 Instruções para o VS Code:
 
 1. Abra o arquivo `README.md` no seu VS Code.
@@ -8,7 +6,6 @@ Perfeito! Para deixar seu repositório no nível de um administrador de sistemas
 
 ---
 
-```markdown
 # 🏢 Infraestrutura Corporativa Linux (LDAP + Samba)
 
 Projeto prático de implementação de uma rede corporativa simulada utilizando **Debian GNU/Linux 13**. O ambiente utiliza servidores virtualizados para garantir segurança, organização departamental e centralização de acessos através de um diretório de identidades.
@@ -110,5 +107,3 @@ mount -t cifs //10.0.0.30/comercial /mnt/comercial -o user=pedro
 
 *Projeto desenvolvido para a disciplina de Administração de Sistemas de Redes.*
 **Autor:** Aristeu Dantas da Costa Júnior
-
-```
