@@ -1,0 +1,8 @@
+# Reiniciar serviços após alteração no smb.conf
+systemctl restart smbd nmbd
+
+# Verificar se os usuários do LDAP aparecem no Samba
+getent passwd | grep -E 'joao|maria|pedro'
+
+# Testar a sintaxe do arquivo de configuração
+testparm

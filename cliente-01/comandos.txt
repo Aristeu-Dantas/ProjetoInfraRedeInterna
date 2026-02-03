@@ -1,0 +1,5 @@
+# Listar compartilhamentos disponíveis no servidor
+smbclient -L //10.0.0.30 -U pedro
+
+# Montar pasta comercial manualmente
+mount -t cifs //10.0.0.30/comercial /mnt/comercial -o user=pedro

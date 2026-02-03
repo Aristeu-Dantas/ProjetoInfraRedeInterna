@@ -1,0 +1,55 @@
+### 📄 Exemplo de Log de Auditoria (Samba no SRV5)
+
+Crie um arquivo chamado `exemplo_audit_samba.log` na pasta do **SRV5** no seu GitHub. Este conteúdo simula o que o serviço `rsyslog` recebe do Samba:
+
+```log
+# Log de Auditoria - Acesso Negado (SRV5 - Centralizador)
+Feb 03 10:45:20 srv3 smbd[1542]: [2026/02/03 10:45:20.123456,  1] ../source3/smbd/service.c:1106(make_connection_snum)
+Feb 03 10:45:20 srv3 smbd[1542]:   connect to service comercial by user pedro (10.0.0.10) - OK
+Feb 03 10:45:45 srv3 smbd[1545]: [2026/02/03 10:45:45.987654,  0] ../source3/smbd/service.c:1050(make_connection_snum)
+Feb 03 10:45:45 srv3 smbd[1545]:   denied access to service financeiro for user pedro (10.0.0.10) - REASON: Not a valid user
+
+```
+
+---
+
+### ⚙️ Como configurar isso (Para o seu Guia de Instalação)
+
+Adicione este trecho ao seu manual para explicar como os logs saem do **SRV3** e chegam no **SRV5**:
+
+#### **No Servidor de Logs (SRV5):**
+
+Habilite a recepção de logs remotos editando o `/etc/rsyslog.conf`:
+
+* Descomente as linhas:
+```bash
+module(load="imudp")
+input(type="imudp" port="514")
+
+```
+
+
+* Reinicie: `systemctl restart rsyslog`
+
+#### **No Servidor Samba (SRV3):**
+
+Configure o Samba para enviar logs via Syslog adicionando ao `[global]` do `smb.conf`:
+
+```ini
+logging = syslog
+syslog = 1
+syslog only = yes
+
+```
+
+E aponte o rsyslog do SRV3 para o SRV5:
+
+```bash
+# Adicione ao /etc/rsyslog.conf
+*.* @10.0.0.40:514
+
+```
+
+---
+
+### 📊 Fluxo de Log Corporativo
